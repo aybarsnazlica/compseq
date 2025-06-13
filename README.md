@@ -1,0 +1,2 @@
+# compseq
+Sequence comparison utility
