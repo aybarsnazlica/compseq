@@ -1,8 +1,10 @@
 use bio::alignment::Alignment;
 use bio::alignment::AlignmentOperation::*;
 use bio::alignment::pairwise::*;
+use bio::io::fasta;
 use bio::scores::blosum62;
 use bio::utils::TextSlice;
+use std::fs;
 
 pub fn align(x: TextSlice, y: TextSlice) -> Alignment {
     let mut aligner = Aligner::with_capacity(x.len(), y.len(), -5, -1, &blosum62);
@@ -20,6 +22,14 @@ pub fn identity(alignment: &Alignment) -> f64 {
     let length = alignment.xlen.max(alignment.ylen) as f64;
 
     num_matches / length
+}
+
+pub fn read_fasta(fasta_file: String) -> Vec<fasta::Record> {
+    let file = fs::File::open(fasta_file).expect("File opening failed");
+    let records = fasta::Reader::new(file).records();
+
+    let sequences: Vec<fasta::Record> = records.map(|r| r.expect("Invalid FASTA record")).collect();
+    sequences
 }
 
 #[cfg(test)]
